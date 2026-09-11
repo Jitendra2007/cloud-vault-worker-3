@@ -316,11 +316,11 @@ async def main():
             catalog = json.load(f)
 
     story_info = None
-    target_clean = re.sub(r"['’`\s\-_]+", "", args.story.lower())
+    target_clean = re.sub(r"['’`:;\(\)\s\-_]+", "", args.story.lower())
     for k, v in catalog.items():
-        off_clean = re.sub(r"['’`\s\-_]+", "", v.get("official_title", "").lower())
-        chn_clean = re.sub(r"['’`\s\-_]+", "", v.get("channel_name", "").lower())
-        fld_clean = re.sub(r"['’`\s\-_]+", "", v.get("channel_folder", "").lower())
+        off_clean = re.sub(r"['’`:;\(\)\s\-_]+", "", v.get("official_title", "").lower())
+        chn_clean = re.sub(r"['’`:;\(\)\s\-_]+", "", v.get("channel_name", "").lower())
+        fld_clean = re.sub(r"['’`:;\(\)\s\-_]+", "", v.get("channel_folder", "").lower())
         if target_clean in off_clean or target_clean in chn_clean or target_clean in fld_clean or off_clean in target_clean:
             story_info = v
             break
@@ -330,7 +330,7 @@ async def main():
     if not story_info and os.path.exists(stories_data_dir):
         # Fallback: scan stories_data directory directly by string similarity
         for d in os.listdir(stories_data_dir):
-            d_clean = re.sub(r"['’`\s\-_]+", "", d.lower())
+            d_clean = re.sub(r"['’`:;\(\)\s\-_]+", "", d.lower())
             if target_clean in d_clean or d_clean in target_clean:
                 m = re.match(r'^(\d+)_(.+)$', d)
                 cid_str = m.group(1) if m else "0"
@@ -898,13 +898,26 @@ async def main():
 
                             # 🏷️ REWRITE EMBEDDED ID3 TAGS (PURE TITLE)
                             try:
-                                from mutagen.id3 import ID3, TIT2, TPE1
+                                from mutagen.id3 import ID3, TIT2, TPE1, APIC
                                 try:
                                     tags = ID3(buf)
                                 except Exception:
                                     tags = ID3()
                                 tags.add(TIT2(encoding=3, text=display_title))
                                 tags.add(TPE1(encoding=3, text=performer_title))
+                                if cover_path and os.path.exists(cover_path):
+                                    try:
+                                        with open(cover_path, "rb") as img_f:
+                                            img_bytes = img_f.read()
+                                        tags.add(APIC(
+                                            encoding=3,
+                                            mime="image/jpeg",
+                                            type=3,
+                                            desc="Cover",
+                                            data=img_bytes
+                                        ))
+                                    except Exception:
+                                        pass
                                 clean_buf = io.BytesIO()
                                 tags.save(clean_buf)
                                 clean_buf.seek(0)
@@ -934,7 +947,7 @@ async def main():
                                 vault_client.send_file(
                                     vault_channel,
                                     file=input_file,
-                                    thumb=cover_input or (cover_path if cover_path and os.path.exists(cover_path) else None),
+                                    thumb=cover_path if cover_path and os.path.exists(cover_path) else None,
                                     caption="",
                                     attributes=audio_attrs,
                                     supports_streaming=True
