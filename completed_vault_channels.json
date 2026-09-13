@@ -30,12 +30,6 @@
     "timestamp": "2026-09-08 02:18:49 UTC"
   },
   {
-    "story": "Best Soldier Son-in-Law",
-    "vault_channel_id": "-1003910311081",
-    "total_episodes": 1059,
-    "timestamp": "2026-09-08 03:22:00 UTC"
-  },
-  {
     "story": "My Assassin System",
     "vault_channel_id": "-1004449307714",
     "total_episodes": 614,
@@ -58,5 +52,11 @@
     "vault_channel_id": "-1003533875902",
     "total_episodes": 560,
     "timestamp": "2026-09-12 04:37:54 UTC"
+  },
+  {
+    "story": "Best Soldier Son-in-Law",
+    "vault_channel_id": "-1003910311081",
+    "total_episodes": 1059,
+    "timestamp": "2026-09-13 13:37:01 UTC"
   }
 ]
