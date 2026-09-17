@@ -537,7 +537,8 @@ async def main():
         harvested_items.sort(key=lambda x: int(x["calc_ep"]))
         print(f"📦 Found {len(harvested_items)} harvested tracks (Strict Range: Ep {harvested_items[0]['calc_ep']} to Ep {harvested_items[-1]['calc_ep']})")
 
-        channel_title = f"{official_title} (Official Pocket FM)"
+        story_name = official_title
+        channel_title = story_name
         vault_channel = await get_or_create_vault_channel(vault_client, channel_title, cover_path, from_start=args.from_start)
 
         uploaded_episodes = set()
@@ -567,7 +568,7 @@ async def main():
                 continue
 
             display_title = item.get("display_title", f"Ep {calc_ep}")
-            performer_title = official_title
+            performer_title = story_name
             final_filename = f"{display_title}.mp3"
 
             input_file = await vault_client.upload_file(item["mp3_path"], file_name=final_filename)
@@ -902,11 +903,15 @@ async def main():
                             sub_title = s
                     elif raw_title or raw_filename:
                         clean_raw = clean_audio_title(raw_title or raw_filename)
-                        if clean_raw and not re.fullmatch(r'(?:Ep|Episode|E)?\s*\d+', clean_raw, flags=re.I) and clean_raw.lower() != f"episode {calc_ep}":
-                            sub_title = clean_raw
-                    display_title = f"Ep {ep_str} - {sub_title}" if sub_title else f"Ep {ep_str}"
-                    official_title = official_titles_map.get(str(calc_ep), "") if official_titles_map else ""
-                    performer_title = official_title if official_title else display_title
+                    ep_official = official_titles_map.get(str(calc_ep), "") if official_titles_map else ""
+                    if ep_official:
+                        display_title = ep_official if ep_official.startswith("E") or ep_official.startswith("Ep") else f"Ep {ep_str} - {ep_official}"
+                    elif sub_title:
+                        display_title = f"Ep {ep_str} - {sub_title}"
+                    else:
+                        display_title = f"Ep {ep_str}"
+
+                    performer_title = official_title
                     final_filename = f"{display_title}.mp3"
 
                     # Robust per-episode download and upload with automatic reconnect and retries
