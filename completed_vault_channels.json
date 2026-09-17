@@ -66,15 +66,15 @@
     "timestamp": "2026-09-14 02:53:50 UTC"
   },
   {
-    "story": "Birth Of The Demonic Sword",
-    "vault_channel_id": "-1004487885353",
-    "total_episodes": 2361,
-    "timestamp": "2026-09-17 14:40:42 UTC"
-  },
-  {
     "story": "Ep 671 - Doubts",
     "vault_channel_id": "-1004473406303",
     "total_episodes": 671,
     "timestamp": "2026-09-17 15:18:16 UTC"
+  },
+  {
+    "story": "Birth Of The Demonic Sword",
+    "vault_channel_id": "-1004487885353",
+    "total_episodes": 2361,
+    "timestamp": "2026-09-17 16:34:10 UTC"
   }
 ]
